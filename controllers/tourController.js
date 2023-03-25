@@ -130,3 +130,10 @@ exports.seedData = async(req, res) => {
         })
     }
 };
+// Alias middleware controller
+exports.aliasTopTour = (req, res, next) => {
+    req.query.limit = '5';
+    req.query.sort = 'price,-ratingAverage';
+    req.query.fields = 'name,price,ratingAverage,summary';
+    next();
+};
