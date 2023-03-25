@@ -1,6 +1,6 @@
 // Model
-const Tour = require('./../models/tourModel');
-const devTours = require('./../dev-data/data/tours');
+const Tour = require('../models/tourModel');
+const devTours = require('../dev-data/data/tours');
 // Get all tours
 exports.getAllTours = async (req, res) => {
     try {
@@ -18,7 +18,9 @@ exports.getAllTours = async (req, res) => {
         queryStr = queryStr.replace(/\b(gte|gt|lte)\b/g, match => `$${match}`);
         // Test cl
         console.log(JSON.parse(queryStr));
-        const query = Tour.find(JSON.parse(queryStr));
+        let query = Tour.find(JSON.parse(queryStr));
+        // Sorting
+        
         const tours = await query;
         // Test cl
         console.log(req.requestTime);
