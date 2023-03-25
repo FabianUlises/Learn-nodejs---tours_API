@@ -1,13 +1,24 @@
+// Model
 const Tour = require('./../models/tourModel');
+// Get all tours
 exports.getAllTours = async (req, res) => {
-    const tours = await Tour.find();
-    console.log(tours);
+    // Getting tours from db
+    const Tours = await Tour.find();
+    // Test cl
     console.log(req.requestTime);
-    res.status(200).send('/api/v1/tours / get route');
+    res.status(200).json({
+        status: 'success',
+        data: Tours
+    });
 };
-exports.createTour = (req, res) => {
-    console.log(req.body);
-    res.status(201).send('/api/v1/tours post route');
+// Create tour
+exports.createTour = async (req, res) => {
+    // Creating tour
+    const newTour = await Tour.create(req.body);
+    res.status(201).json({
+        status: 'success',
+        data: newTour
+    });
 };
 exports.getTour = (req, res) => {
     res.status(200).send('/api/v1/tours/id get tour route');

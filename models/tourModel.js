@@ -1,8 +1,10 @@
+// Dependencies
 const mongoose = require('mongoose');
+// Schema
 const tourSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'A tour must have a name'],
+        // required: [true, 'A tour must have a name'],
         unique: true
     },
     rating: {
@@ -11,8 +13,9 @@ const tourSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: [true, 'A tour must have a price']
+        // required: [true, 'A tour must have a price']
     }
 });
+// Model
 const Tour = mongoose.model('Tour', tourSchema);
-module.export = Tour;
+module.exports = Tour;
