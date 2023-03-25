@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 router.get('/', (req, res) => {
+    console.log(req.requestTime);
     res.status(200).send('/api/v1/tours / get route');
 });
 router.post('/', (req, res) => {
