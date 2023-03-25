@@ -1,45 +1,54 @@
 // Model
 const Tour = require('../models/tourModel');
 const devTours = require('../dev-data/data/tours');
-// Get all tours
-exports.getAllTours = async (req, res) => {
-    try {
+class APIFeatures {
+    constructor(query, queryString) {
+        this.query = query;
+        this.queryString = queryString;
+    }
+    filter() {
         // Filtering
         // Query
-        const queryObj = { ...req.query };
+        const queryObj = { ...this.queryString };
         // Removing unwanted query items from query string
         const excludedFields = ['page', 'sort', 'limit', 'fields'];
         excludedFields.forEach((el) => delete queryObj[el]);
-        // Getting tours from db
-        // Test cl
-        console.log(queryObj)
         // Advanced filtering
         let queryStr = JSON.stringify(queryObj);
         queryStr = queryStr.replace(/\b(gte|gt|lte)\b/g, match => `$${match}`);
-        // Test cl
-        console.log(JSON.parse(queryStr));
-        let query = Tour.find(JSON.parse(queryStr));
+        this.query = this.query.find(JSON.parse(queryStr));
+        return this;
+    }
+    sort() {
         // Sorting
-        if(req.query.sort) {
-            const sortBy = req.query.sort.split(',').join(' ');
-            // Test cl
-            console.log(sortBy);
-            console.log(req.query);
+        if(this.queryString.sort) {
+            const sortBy = this.queryString.sort.split(',').join(' ');
             // Sorting query
-            query = query.sort(sortBy);
+            this.query = this.query.sort(sortBy);
         } else {
-            query = query.sort('price');
+            this.query = this.query.sort('price');
         }
+        return this;
+    }
+    limitFields() {
         // Limiting
-        if(req.query.fields) {
-            const fields = req.query.fields.split(',').join(' ');
-            query = query.select(fields);
+        if(this.queryString.fields) {
+            const fields = this.queryString.fields.split(',').join(' ');
+            this.query = this.query.select(fields);
         } else {
-            query = query.select('-__v');
+            this.query = this.query.select('-__v');
         }
-        const tours = await query;
-        // Test cl
-        console.log(req.requestTime);
+        return this;
+    }
+};
+// Get all tours
+exports.getAllTours = async (req, res) => {
+    try {
+        const features = new APIFeatures(Tour.find(), req.query)
+            .filter()
+            .sort()
+            .limitFields()
+        const tours = await features.query;
         res.status(200).json({
             status: 'success',
             data: tours
@@ -47,7 +56,7 @@ exports.getAllTours = async (req, res) => {
     } catch(err) {
         res.status(400).json({
             status: 'fail',
-            message: err
+            message: 'err'
         });
     }
 };
