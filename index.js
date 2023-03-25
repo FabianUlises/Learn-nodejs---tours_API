@@ -5,13 +5,8 @@ const express = require('express');
 const app = express();
 
 // Routes
-app.get('/api/v1/tours', (req, res) => {
-    res.status(200).send('/  get route');
-});
-app.post('/', (req, res) => { 
-    res.status(200).send('/ post route');
-    console.log(req.body);
-});
+app.use('/api/v1/tours', require('./routes/tourRoutes'));
+
 // Server on
 app.listen(process.env.PORT, (err) => {
     console.log(`server listening on port: ${process.env.PORT}`);
