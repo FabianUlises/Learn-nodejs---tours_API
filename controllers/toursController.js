@@ -4,6 +4,7 @@ const devTours = require('./../dev-data/data/tours');
 // Get all tours
 exports.getAllTours = async (req, res) => {
     try {
+        // Filtering
         // Query
         const queryObj = { ...req.query };
         // Removing unwanted query items from query string
@@ -12,7 +13,12 @@ exports.getAllTours = async (req, res) => {
         // Getting tours from db
         // Test cl
         console.log(queryObj)
-        const query = Tour.find(queryObj);
+        // Advanced filtering
+        let queryStr = JSON.stringify(queryObj);
+        queryStr = queryStr.replace(/\b(gte|gt|lte)\b/g, match => `$${match}`);
+        // Test cl
+        console.log(JSON.parse(queryStr));
+        const query = Tour.find(JSON.parse(queryStr));
         const tours = await query;
         // Test cl
         console.log(req.requestTime);
