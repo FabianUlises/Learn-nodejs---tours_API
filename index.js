@@ -3,7 +3,8 @@ const dotenv = require('dotenv').config();
 const express = require('express');
 // Server configuration
 const app = express();
-
+// Middleware
+app.use(express.json());
 // Routes
 app.use('/api/v1/tours', require('./routes/tourRoutes'));
 
