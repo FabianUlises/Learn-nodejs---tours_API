@@ -30,6 +30,13 @@ exports.getAllTours = async (req, res) => {
         } else {
             query = query.sort('price');
         }
+        // Limiting
+        if(req.query.fields) {
+            const fields = req.query.fields.split(',').join(' ');
+            query = query.select(fields);
+        } else {
+            query = query.select('-__v');
+        }
         const tours = await query;
         // Test cl
         console.log(req.requestTime);
