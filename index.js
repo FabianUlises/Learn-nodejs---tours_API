@@ -5,8 +5,12 @@ const express = require('express');
 const app = express();
 
 // Routes
-app.get('/', (req, res) => {
-    res.send('/  get route');
+app.get('/api/v1/tours', (req, res) => {
+    res.status(200).send('/  get route');
+});
+app.post('/', (req, res) => { 
+    res.status(200).send('/ post route');
+    console.log(req.body);
 });
 // Server on
 app.listen(process.env.PORT, (err) => {
