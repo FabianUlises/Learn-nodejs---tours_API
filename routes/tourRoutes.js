@@ -5,6 +5,6 @@ router.get('/', (req, res) => {
 });
 router.post('/', (req, res) => {
     console.log(req.body);
-    res.status(200).send('/api/v1/tours post route');
+    res.status(201).send('/api/v1/tours post route');
 });
 module.exports = router;
