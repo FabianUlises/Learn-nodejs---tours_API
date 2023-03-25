@@ -1,4 +1,7 @@
-exports.getAllTours = (req, res) => {
+const Tour = require('./../models/tourModel');
+exports.getAllTours = async (req, res) => {
+    const tours = await Tour.find();
+    console.log(tours);
     console.log(req.requestTime);
     res.status(200).send('/api/v1/tours / get route');
 };
