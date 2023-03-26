@@ -1,5 +1,7 @@
+// Dependencies
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcrypt');
 const userSchema = mongoose.Schema({
     name: {
         type: String,
@@ -29,8 +31,14 @@ const userSchema = mongoose.Schema({
         }
     }
 });
-userSchema.pre('save', function(next) {
-    if(this.isModified('password')) return next();
+userSchema.pre('save', async function(next) {
+    // Only running if password was modified
+    if(!this.isModified('password')) return next();
+    // Hashing password with bcrypt
+    this.password = await bcrypt.hash(this.password, 12);
+    // Deleting confirmpassword
+    this.passwordConfirm = undefined;
+    next();
 });
 const User = mongoose.model('User', userSchema);
 module.exports = User; 
