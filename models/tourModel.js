@@ -1,5 +1,6 @@
 // Dependencies
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 // Schema
 const tourSchema = new mongoose.Schema({
     name: {
@@ -10,6 +11,7 @@ const tourSchema = new mongoose.Schema({
         maxlength: [40, 'A tour name must have less or equal then 40 characters'],
         minlength: [10, 'A tour name must have more or equal then 10 characters']
     },
+    slug: String,
     duration: {
         type: Number,
         required: [true, 'A tour must have a duration']
@@ -81,8 +83,9 @@ tourSchema.virtual('durationWeeks').get(function() {
     return this.duration / 7;
 });
 // Document middleware
-tourSchema.pre('save', function() {
-
+tourSchema.pre('save', function(next) {
+    this.slug = slugify(this.name, { lower: true });
+    next();
 });
 // Model
 const Tour = mongoose.model('Tour', tourSchema);

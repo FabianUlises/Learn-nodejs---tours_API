@@ -15,4 +15,10 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/v1/tours', require('./routes/tourRoutes'));
 app.use('/api/v1/users', require('./routes/userRoutes'));
+app.get('*', (req, res) => {
+    res.status(404).json({
+        status: 'fail',
+        message: `Can't find ${req.originalUrl} on this server!`
+    });
+});
 module.exports = app;
