@@ -3,6 +3,12 @@ const AppError = require('./../utils/appError');
 const jwt = require('jsonwebtoken');
 // Model
 const User = require('./../models/userModel');
+// Function to create jwt
+const signToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN
+    });
+};
 exports.signUp = async(req, res) => {
     try {
         // Create upser from input
@@ -12,9 +18,7 @@ exports.signUp = async(req, res) => {
             password: req.body.password,
             passwordConfirm: req.body.passwordConfirm
         });
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-            expiresIn: process.env.JWT_EXPIRES_IN
-        });
+        const token = signToken(user._id);
         res.status(201).json({
             status: 'success',
             token,
@@ -42,7 +46,7 @@ exports.login = async (req, res, next) => {
             return next(new AppError('Incorrect email or password', 401));
         };
         // If everything is ok, send token to client
-        const token = '';
+        const token = signToken(user._id);
         res.status(200).json({
             status: 'success',
             token
