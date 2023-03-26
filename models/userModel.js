@@ -33,8 +33,7 @@ const userSchema = mongoose.Schema({
         }
     },
     passwordChangedAt: {
-        type: Date,
-        required: true
+        type: Date
     },
     role: {
         type: String,
@@ -44,6 +43,7 @@ const userSchema = mongoose.Schema({
     passwordResetToken: String,
     passwordResetExpires: Date
 });
+// Middleware
 userSchema.pre('save', async function(next) {
     // Only running if password was modified
     if(!this.isModified('password')) return next();
@@ -51,6 +51,13 @@ userSchema.pre('save', async function(next) {
     this.password = await bcrypt.hash(this.password, 12);
     // Deleting confirmpassword
     this.passwordConfirm = undefined;
+    next();
+});
+userSchema.pre('save', function(next) {
+    // If password isnt modified or new continue
+    if(!this.isModified('password') || this.isNew) return next();
+    // Update user model field
+    this.passwordChangedAt = Date.now() - 1000;
     next();
 });
 // Methods
