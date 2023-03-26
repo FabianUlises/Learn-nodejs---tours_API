@@ -116,6 +116,7 @@ exports.deletetour = async(req, res) => {
         });
     }
 };
+// Seed data to database
 exports.seedData = async(req, res) => {
     try {
         const tours = await Tour.insertMany(devTours);

@@ -1,7 +1,7 @@
 // Dependencies
 const express = require('express');
 const morgan = require('morgan');
-// Server configuration
+// App configuration
 const app = express();
 const dotenv = require('dotenv').config();
 // Middleware
