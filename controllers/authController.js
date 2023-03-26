@@ -1,6 +1,7 @@
 // Dependencies
 const AppError = require('./../utils/appError');
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 // Model
 const User = require('./../models/userModel');
 // Function to create jwt
@@ -63,15 +64,17 @@ exports.login = async (req, res, next) => {
 // Protect routes
 exports.protect = async(req, res, next) => {
     try {
-        console.log(req.headers.authorization);
+        // Check if token exsits in headers
         let token;
         if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
             token = req.headers.authorization.split(' ')[1];
         }
-        console.log('token', token);
+        // If no token throw error
         if(!token) {
             return next(new AppError('You are not logged in! Please log in to get access', 401));
         }
+        // Verify token
+        const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
         next();
     } catch(err) {
         res.status(401).json({
