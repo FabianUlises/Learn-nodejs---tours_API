@@ -30,6 +30,10 @@ const userSchema = mongoose.Schema({
             },
             message: 'Password does not match'
         }
+    },
+    passwordChangedAt: {
+        type: Date,
+        required: true
     }
 });
 userSchema.pre('save', async function(next) {
@@ -41,9 +45,21 @@ userSchema.pre('save', async function(next) {
     this.passwordConfirm = undefined;
     next();
 });
+// Methods
 // Function to check login password
 userSchema.methods.correctPassword = function(canidatePassword, userPassword) {
     return bcrypt.compare(canidatePassword, userPassword);
+};
+// Check if user changed password after jwt was issued
+userSchema.methods.passwordChangedAfter = function(JWTTimestamp) {
+    if(this.passwordChangedAt) {
+        // Convert timestamp to time from date
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+        // If password was changed  it will be greater than jwttimestamp meaning true
+        return JWTTimestamp < changedTimestamp;
+    }
+    // False means not changed
+    return false;
 };
 const User = mongoose.model('User', userSchema);
 module.exports = User; 
