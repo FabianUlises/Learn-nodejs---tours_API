@@ -2,6 +2,7 @@
 const AppError = require('./../utils/appError');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const sendEmail = require('./../utils/email');
 // Model
 const User = require('./../models/userModel');
 // Function to create jwt
@@ -118,10 +119,43 @@ exports.forgotPassword = async(req, res, next) => {
         // If no user throw error
         return next(new AppError('There is no user with that email address.', 404));
     }
+    console.log(user);
     // Generate random reset token
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
-};
+    // Send email
+    // Create reset url
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+    // Reset password message
+    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetUrl}.\nIf you didn't forget your password, please ignore this email!`;
+    try {
+        console.log('sending email');
+        await sendEmail({
+            email: user.email,
+            subject: 'Your password reset token (valid for 10 min)',
+            message
+        });
+        console.log('email sent');
+        res.status(200).json({
+            status: 'success',
+            message: 'Token sent to email!'
+        });
+    } catch(err) {
+        console.log(`error==========`, user)
+        // Reset user password reset fields if email does not send
+        console.log(`reseting user fields`);
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        // Save email with new changes
+        console.log(`saving new user fields`);
+        await user.save({ validateBeforeSave: false });
+        // return next(new AppError('There was an error sending the email. Please try again later!'), 500);
+        res.json({
+            status: 'fail',
+            message: err
+        })
+    }
+}; 
 exports.resetPassword = (req, res) => {
-
+    res.send('resetpassword stub route');
 };
