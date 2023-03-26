@@ -2,10 +2,12 @@
 const express = require('express');
 const morgan = require('morgan');
 const AppError = require('./utils/appError');
+const cors = require('cors');
 const globalErrorHandler = require('./controllers/errorController');
 // App configuration
 const app = express();
 const dotenv = require('dotenv').config();
+app.use(cors());
 // Middleware
 app.use(express.json());
 app.use(morgan('dev'));
