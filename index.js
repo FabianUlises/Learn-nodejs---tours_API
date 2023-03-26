@@ -8,7 +8,9 @@ const globalErrorHandler = require('./controllers/errorController');
 // App configuration
 const app = express();
 const dotenv = require('dotenv').config();
+// Cors configuration
 app.use(cors());
+app.options('*', cors());
 // Middleware
 app.use(express.json());
 app.use(morgan('dev'));
