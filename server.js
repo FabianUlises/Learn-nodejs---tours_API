@@ -1,5 +1,11 @@
 const app = require('./index');
 const mongoose = require('mongoose');
+// Handle uncaught exceptions for async functions
+process.on('uncaughtException', err => {
+    console.log('UNCAUHT EXCEPTION! Server Shutting down...');
+    console.log(err.name, err.message);
+    process.exit(1);
+});
 // Mongoose db connection
 mongoose.connect(process.env.MONGO_URI,{
     useNewUrlParser: true,
@@ -15,7 +21,9 @@ const server = app.listen(process.env.PORT, (err) => {
 });
 // Unhandled rejections
 process.on('unhandledRejection', err => {
+    // Shut down server
     server.close(() => {
+        // Exit
         process.exit(1);
     });
 });
