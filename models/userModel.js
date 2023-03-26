@@ -39,7 +39,9 @@ const userSchema = mongoose.Schema({
         type: String,
         enum: ['user', 'guide', 'lead-guide', 'admin'],
         default: 'user'
-    }
+    },
+    passwordResetToken: String,
+    passwordResetExpires: Date
 });
 userSchema.pre('save', async function(next) {
     // Only running if password was modified
