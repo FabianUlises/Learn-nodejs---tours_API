@@ -45,7 +45,7 @@ exports.getAllTours = async (req, res) => {
             data: tours
         });
     } catch(err) {
-        res.status(400).json({
+        res.status(404).json({
             status: 'fail',
             message: err
         });
@@ -63,7 +63,7 @@ exports.createTour = async (req, res) => {
     } catch(err) {
         res.status(400).json({
             status: 'fail',
-            message: 'Invalid data sent!'
+            message: err
         });
     }
 
@@ -95,7 +95,7 @@ exports.updateTour = async(req, res) => {
             data: tour
         });
     } catch(err) {
-        res.status(400).json({
+        res.status(404).json({
             status: 'fail',
             message: err
         });
@@ -105,12 +105,12 @@ exports.updateTour = async(req, res) => {
 exports.deletetour = async(req, res) => {
     try {
         const tour = await Tour.findByIdAndDelete(req.params.id);
-        res.status(200).json({
+        res.status(204).json({
             status: 'success',
             data: tour
         });
     } catch(err) {
-        res.status(400).json({
+        res.status(404).json({
             status: 'fail',
             messagE: err
         });
@@ -120,7 +120,7 @@ exports.deletetour = async(req, res) => {
 exports.seedData = async(req, res) => {
     try {
         const tours = await Tour.insertMany(devTours);
-        res.status(200).json({
+        res.status(201).json({
             status: 'success',
             message: 'data inserted'
         })
