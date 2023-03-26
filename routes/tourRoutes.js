@@ -13,6 +13,6 @@ router.route('/')
 router.route('/:id')
     .get(toursController.getTour)
     .patch(toursController.updateTour)
-    .delete(toursController.deletetour)
+    .delete(authController.protect, authController.restrictTo('admin', 'lead-guide'), toursController.deletetour)
 router.get('/seed-data/tours', toursController.seedData);
 module.exports = router;

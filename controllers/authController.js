@@ -19,7 +19,8 @@ exports.signUp = async(req, res) => {
             email: req.body.email,
             password: req.body.password,
             passwordConfirm: req.body.passwordConfirm,
-            passwordChangedAt: req.body.passwordChangedAt
+            passwordChangedAt: req.body.passwordChangedAt,
+            role: req.body.role
         });
         const token = signToken(user._id);
         res.status(201).json({
@@ -94,4 +95,17 @@ exports.protect = async(req, res, next) => {
             message: err
         });
     }
+};
+// Restric access to certain users
+exports.restrictTo = (...roles) => {
+    // Returning function to use req, res params
+    return (req, res, next) => {
+        // Check if user role is in role array provided
+        if(!roles.includes(req.user.role)) {
+            // If user does not have role to perform action throw error
+            return next(new AppError('you do not have permission to perform this action', 403));
+        };
+        // If user has role to perform action continue
+        next();
+    };
 };
