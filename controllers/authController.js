@@ -9,6 +9,7 @@ const signToken = (id) => {
         expiresIn: process.env.JWT_EXPIRES_IN
     });
 };
+// sign up user
 exports.signUp = async(req, res) => {
     try {
         // Create upser from input
@@ -33,6 +34,7 @@ exports.signUp = async(req, res) => {
         });
     }
 };
+// Login user
 exports.login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -53,6 +55,26 @@ exports.login = async (req, res, next) => {
         })
     } catch(err) {
         res.status(400).json({
+            status: 'fail',
+            message: err
+        });
+    }
+};
+// Protect routes
+exports.protect = async(req, res, next) => {
+    try {
+        console.log(req.headers.authorization);
+        let token;
+        if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+            token = req.headers.authorization.split(' ')[1];
+        }
+        console.log('token', token);
+        if(!token) {
+            return next(new AppError('You are not logged in! Please log in to get access', 401));
+        }
+        next();
+    } catch(err) {
+        res.status(401).json({
             status: 'fail',
             message: err
         });
