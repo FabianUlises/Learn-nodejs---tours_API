@@ -3,6 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const AppError = require('./utils/appError');
 const cors = require('cors');
+const compression = require('compression');
 const globalErrorHandler = require('./controllers/errorController');
 // App configuration
 const app = express();
@@ -11,6 +12,7 @@ app.use(cors());
 // Middleware
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(compression());
 // Get requested time and date
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
