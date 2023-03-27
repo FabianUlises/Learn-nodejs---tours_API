@@ -49,6 +49,11 @@ const userSchema = mongoose.Schema({
     }
 });
 // Middleware
+// Only get documents with active set to true and hide field
+userSchema.pre(/^find/, function(next) {
+    this.find({ active: {$ne: false} });
+    next();
+});
 userSchema.pre('save', async function(next) {
     // Only running if password was modified
     if(!this.isModified('password')) return next();
