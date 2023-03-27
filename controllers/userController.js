@@ -57,7 +57,15 @@ exports.updateMe = async (req, res, next) => {
         data: user
     });
 };
-// Delete user
+// Delete user for user
+exports.deleteMe = async (req, res) => {
+    const user = await User.findByIdAndUpdate(req.user.id, { active: false });
+    res.status(204).json({
+        status: 'success',
+        data: null
+    });
+};
+// Delete user for admin
 exports.deleteUser = (req, res) => {
     res.send('delete user stub route');
 };
