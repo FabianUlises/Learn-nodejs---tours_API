@@ -3,6 +3,8 @@ const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 const AppError = require('./utils/appError');
 const cors = require('cors');
 const compression = require('compression');
@@ -18,6 +20,10 @@ app.options('*', cors());
 // Middleware
 // Data parser, reading data from body into req.body
 app.use(express.json());
+// Data sanitization against NoSql query injection
+app.use(mongoSanitize());
+// Data sanitization against xss
+app.use(xss());
 app.use(morgan('dev'));
 app.use(compression());
 // Rate limiter config
