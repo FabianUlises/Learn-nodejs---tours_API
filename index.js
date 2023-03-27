@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 const AppError = require('./utils/appError');
 const cors = require('cors');
 const compression = require('compression');
@@ -24,6 +25,17 @@ app.use(express.json());
 app.use(mongoSanitize());
 // Data sanitization against xss
 app.use(xss());
+// Prevent parameter pollution
+app.use(hpp({
+    whitelist: [
+        'duration',
+        'ratingsQuantity',
+        'ratingsAverage',
+        'maxGroupSize',
+        'difficulty',
+        'price'
+    ]
+}))
 app.use(morgan('dev'));
 app.use(compression());
 // Rate limiter config
