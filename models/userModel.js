@@ -41,7 +41,12 @@ const userSchema = mongoose.Schema({
         default: 'user'
     },
     passwordResetToken: String,
-    passwordResetExpires: Date
+    passwordResetExpires: Date,
+    active: {
+        type: Boolean,
+        defualt: true,
+        select: false
+    }
 });
 // Middleware
 userSchema.pre('save', async function(next) {
