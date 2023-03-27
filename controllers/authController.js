@@ -18,7 +18,7 @@ const createAndSendToken = (user, statusCode, req, res) => {
     const token = signToken(user._id);
     // Send cookie
     res.cookie('jwt', token, {
-        expires: new Date(Date.now() * 24 * 60 * 1000),
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 1000),
         httpOnly: true,
         secure: false
     });
@@ -31,7 +31,7 @@ const createAndSendToken = (user, statusCode, req, res) => {
     })
 };
 // sign up user
-exports.signUp = async(req, res) => {
+exports.signUp = async(req, res, next) => {
     try {
         // Create upser from input
         const user = await User.create({
@@ -42,14 +42,7 @@ exports.signUp = async(req, res) => {
             passwordChangedAt: req.body.passwordChangedAt,
             role: req.body.role
         });
-        const token = signToken(user._id);
-        res.status(201).json({
-            status: 'success',
-            token,
-            data: {
-                user: user
-            }
-        });
+        createAndSendToken(user, 201, req, res);
     } catch(err) {
         res.status(400).json({
             status: 'fail',
@@ -71,11 +64,8 @@ exports.login = async (req, res, next) => {
             return next(new AppError('Incorrect email or password', 401));
         };
         // If everything is ok, send token to client
-        const token = signToken(user._id);
-        res.status(200).json({
-            status: 'success',
-            token
-        })
+        createAndSendToken(user, 200, req, res);
+
     } catch(err) {
         res.status(400).json({
             status: 'fail',
@@ -178,7 +168,9 @@ exports.resetPassword = async(req, res, next) => {
     // Compare hashed token from params to user in db
     const user = await User.findOne({passwordResetToken: hashedToken, passwordResetExpires: { $gt: Date.now() }});
     if(!user) {
-        return next(new AppError('Token is invalid or has expired', 400));
+        return next(new AppError('Token is invalid or has expired', 400)) ;
+    } else {
+        console.log('user found')
     }
     // If token is valid and user exist, set new password
     user.password = req.body.password;
@@ -188,11 +180,7 @@ exports.resetPassword = async(req, res, next) => {
     await user.save();
     // Update changedPasswordAt field for the user
     // Log the user in and send jwt
-    const token = signToken(user._id);
-    res.status(201).json({
-        status: 'success',
-        token
-    });
+    createAndSendToken(user, 201, req, res);
 };
 exports.updatePassword = async(req, res, next) => {
     try {
@@ -209,11 +197,7 @@ exports.updatePassword = async(req, res, next) => {
         // Use save to re-run validators
         await user.save();
         // Assign jwt
-        const token = signToken(user._id);
-        res.status(200).json({
-            status: 'success',
-            token
-        });
+        createAndSendToken(user, 200, req, res);
     } catch(err) {
         res.status(400).json({
             status: 'fail',
