@@ -13,6 +13,23 @@ const signToken = (id) => {
         expiresIn: process.env.JWT_EXPIRES_IN
     });
 };
+// Function to create token and send through header
+const createAndSendToken = (user, statusCode, req, res) => {
+    const token = signToken(user._id);
+    // Send cookie
+    res.cookie('jwt', token, {
+        expires: new Date(Date.now() * 24 * 60 * 1000),
+        httpOnly: true,
+        secure: false
+    });
+    // Remove password from output
+    user.password = undefined;
+    res.status(statusCode).json({
+        status: 'success',
+        token,
+        data: user
+    })
+};
 // sign up user
 exports.signUp = async(req, res) => {
     try {
