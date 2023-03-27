@@ -2,6 +2,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const AppError = require('./utils/appError');
 const cors = require('cors');
 const compression = require('compression');
@@ -9,10 +10,13 @@ const globalErrorHandler = require('./controllers/errorController');
 // App configuration
 const app = express();
 const dotenv = require('dotenv').config();
-// Cors configuration
+// Helmet config
+app.use(helmet());
+// Cors config
 app.use(cors());
 app.options('*', cors());
 // Middleware
+// Data parser, reading data from body into req.body
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(compression());
