@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const sendEmail = require('./../utils/email');
 // Model
 const User = require('./../models/userModel');
+const { sign } = require('crypto');
 // Function to create jwt
 const signToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -175,4 +176,31 @@ exports.resetPassword = async(req, res, next) => {
         status: 'success',
         token
     });
+};
+exports.updatePassword = async(req, res, next) => {
+    try {
+        // Get user from db
+        const user = await User.findById(req.user.id).select('+password');
+        // Check if current user password is correct
+        if(!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+            // Return error
+            return next(new AppError('Your current password is wrong.', 401));
+        };
+        // If passwords match update new password
+        user.password = req.body.password;
+        user.passwordConfirm = req.body.passwordConfirm;
+        // Use save to re-run validators
+        await user.save();
+        // Assign jwt
+        const token = signToken(user._id);
+        res.status(200).json({
+            status: 'success',
+            token
+        });
+    } catch(err) {
+        res.status(400).json({
+            status: 'fail',
+            message: err
+        })
+    }
 };
